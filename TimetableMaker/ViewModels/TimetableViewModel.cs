@@ -84,22 +84,15 @@ namespace TimetableMaker.ViewModels
         {
             TimeSpan SubDay = EndTime - StartTime;
             int SubHour = EndTime.Hour - StartTime.Hour;
-            if (TeacherName != null && ClassName != null && (SubDay.Days > 0 && SubHour > 0))
-            {
-                ClassList.Add(ClassName);
-                StartTimeList.Add(StartTime);
-                EndTimeList.Add(EndTime);
-                System.Windows.MessageBox.Show(ClassName + "\n" + StartTime.ToString() + " ~ " + EndTime.ToString() + "\n新增成功", "TimetableMaker", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Asterisk);
-                ClassName = "";
-                StartTime = DateTime.MinValue;
-                EndTime = DateTime.MinValue;
-            }
-            else if (TeacherName == null)
+            List<int> HourScope = new List<int>();
+            for (int i = StartTime.Hour; i < EndTime.Hour; i++)
+                HourScope.Add(i);
+            if (TeacherName == null)
             {
                 System.Windows.MessageBox.Show("教師名稱無法為空白", "Alert", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Warning);
                 return;
             }
-            else if (SubDay.Days <= 0 || SubHour <= 0) 
+            else if (SubDay.Days <= 0 || SubHour <= 0)
             {
                 System.Windows.MessageBox.Show("開始時間必須小於結束時間\n(課程結束日期>課程開始日期)&(課程結束時間>課程開始時間)", "Alert", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Warning);
                 return;
@@ -108,6 +101,21 @@ namespace TimetableMaker.ViewModels
             {
                 System.Windows.MessageBox.Show("課程名稱不能為空白", "Alert", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Warning);
                 return;
+            }
+            else if (HourScope.Contains(12)) 
+            {
+                System.Windows.MessageBox.Show("課程時間無法跨越中午午餐時間(12:00)", "Alert", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Warning);
+                return;
+            }
+            else
+            {
+                ClassList.Add(ClassName);
+                StartTimeList.Add(StartTime);
+                EndTimeList.Add(EndTime);
+                System.Windows.MessageBox.Show(ClassName + "\n" + StartTime.ToString() + " ~ " + EndTime.ToString() + "\n新增成功", "TimetableMaker", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Asterisk);
+                ClassName = "";
+                StartTime = DateTime.MinValue;
+                EndTime = DateTime.MinValue;
             }
         }
         public ICommand ExportExcelCommand
@@ -134,14 +142,18 @@ namespace TimetableMaker.ViewModels
             int InititalCell = 8;   // Time initial's Cell is A8
             for (int i = 0; i < 12; i++)
             {
-                var DoubleCellTime = (double)(ws.Range["A" + (InititalCell + (i * 3)).ToString()] as Microsoft.Office.Interop.Excel.Range).Value;
-                DateTime CellTime = DateTime.FromOADate(DoubleCellTime);
+                var StringCellTime = (string)(ws.Range["A" + (InititalCell + (i * 3)).ToString()] as Microsoft.Office.Interop.Excel.Range).Value;
+                string[] CellTimeArray = StringCellTime.Split(new char[2] { ' ', '~' }, StringSplitOptions.RemoveEmptyEntries);
+                DateTime CellStartTime = DateTime.ParseExact(CellTimeArray[0], "HH:mm", null);
+                DateTime CellEndTime = DateTime.ParseExact(CellTimeArray[1], "HH:mm", null);
+                //StringCellTime = StringCellTime.Split('~');
+                DateTime CellTime = DateTime.Now; //DateTime.FromOADate(DoubleCellTime);
                 for (int j = 0; j < EndTimeList.Count; j++)
                 {
-                    if (CellTime.Hour == EndTimeList[j].Hour)
+                    if (CellEndTime.Hour == EndTimeList[j].Hour)
                     {
                         int Span = EndTimeList[j].Hour - StartTimeList[j].Hour;
-                        int DecreaseTime = i - 1;
+                        int DecreaseTime = i;
                         for (int k = Span; k > 0; k--)
                         {
                             string StartTimeWeek = System.Globalization.DateTimeFormatInfo.GetInstance(new System.Globalization.CultureInfo("zh-TW")).DayNames[(byte)StartTimeList[j].DayOfWeek];
@@ -269,18 +281,18 @@ namespace TimetableMaker.ViewModels
                 ws.Range["M5"].Value = "星期六";
                 ws.Range["O5"].Value = "星期日";
                 //Section
-                ws.Range["A8"].Value = "08:00";
-                ws.Range["A11"].Value = "09:00";
-                ws.Range["A14"].Value = "10:00";
-                ws.Range["A17"].Value = "11:00";
-                ws.Range["A20"].Value = "13:00";
-                ws.Range["A23"].Value = "14:00";
-                ws.Range["A26"].Value = "15:00";
-                ws.Range["A29"].Value = "16:00";
-                ws.Range["A32"].Value = "17:00";
-                ws.Range["A35"].Value = "18:00";
-                ws.Range["A38"].Value = "19:00";
-                ws.Range["A41"].Value = "20:00";
+                ws.Range["A8"].Value = "08:00 ~ 09:00";
+                ws.Range["A11"].Value = "09:00 ~ 10:00";
+                ws.Range["A14"].Value = "10:00 ~ 11:00";
+                ws.Range["A17"].Value = "11:00 ~ 12:00";
+                ws.Range["A20"].Value = "13:00 ~ 14:00";
+                ws.Range["A23"].Value = "14:00 ~ 15:00";
+                ws.Range["A26"].Value = "15:00 ~ 16:00";
+                ws.Range["A29"].Value = "16:00 ~ 17:00";
+                ws.Range["A32"].Value = "17:00 ~ 18:00";
+                ws.Range["A35"].Value = "18:00 ~ 19:00";
+                ws.Range["A38"].Value = "19:00 ~ 20:00";
+                ws.Range["A41"].Value = "20:00 ~ 21:00";
                 #endregion
                 ws.Range["A1:P43"].HorizontalAlignment = XlHAlign.xlHAlignCenter;
 

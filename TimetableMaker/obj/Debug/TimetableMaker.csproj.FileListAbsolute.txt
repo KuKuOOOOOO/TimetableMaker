@@ -38,7 +38,6 @@ D:\補習班教材\Code\TimetableMaker\TimetableMaker\bin\Debug\Xceed.Wpf.Toolki
 C:\Users\Fate\Desktop\補習班教材\Code\TimetableMaker\TimetableMaker\bin\Debug\TimetableMaker.exe.config
 C:\Users\Fate\Desktop\補習班教材\Code\TimetableMaker\TimetableMaker\bin\Debug\TimetableMaker.exe
 C:\Users\Fate\Desktop\補習班教材\Code\TimetableMaker\TimetableMaker\bin\Debug\TimetableMaker.pdb
-C:\Users\Fate\Desktop\補習班教材\Code\TimetableMaker\TimetableMaker\bin\Debug\RoyT.TimePicker.dll
 C:\Users\Fate\Desktop\補習班教材\Code\TimetableMaker\TimetableMaker\bin\Debug\Xceed.Wpf.AvalonDock.dll
 C:\Users\Fate\Desktop\補習班教材\Code\TimetableMaker\TimetableMaker\bin\Debug\Xceed.Wpf.AvalonDock.Themes.Aero.dll
 C:\Users\Fate\Desktop\補習班教材\Code\TimetableMaker\TimetableMaker\bin\Debug\Xceed.Wpf.AvalonDock.Themes.Metro.dll
@@ -85,3 +84,5 @@ D:\補習班教材\Code\TimetableMaker\TimetableMaker\bin\Debug\ru\Xceed.Wpf.Ava
 D:\補習班教材\Code\TimetableMaker\TimetableMaker\bin\Debug\sv\Xceed.Wpf.AvalonDock.resources.dll
 D:\補習班教材\Code\TimetableMaker\TimetableMaker\bin\Debug\zh-Hans\Xceed.Wpf.AvalonDock.resources.dll
 D:\補習班教材\Code\TimetableMaker\TimetableMaker\obj\Debug\TimetableMaker.csprojAssemblyReference.cache
+C:\Users\Fate\Desktop\補習班教材\Code\TimetableMaker\TimetableMaker\bin\Debug\Newtonsoft.Json.dll
+C:\Users\Fate\Desktop\補習班教材\Code\TimetableMaker\TimetableMaker\bin\Debug\Newtonsoft.Json.xml
