@@ -129,6 +129,7 @@ namespace TimetableMaker.ViewModels
             app.DisplayAlerts = false;
             Workbook wb = app.Workbooks.Open(@XlsxPath, 0, false, 5, "", "", true, Microsoft.Office.Interop.Excel.XlPlatform.xlWindows, "\t", false, false, 0, true, 1, 0);
             Worksheet ws = wb.Worksheets[1];
+            AssessmentForm(wb);
             #region Print Class
             // Print Teacher name
             if (TeacherName != null)
@@ -318,7 +319,34 @@ namespace TimetableMaker.ViewModels
                 System.Windows.MessageBox.Show(ex.ToString(), "Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
             }
             return XlsxPath;
-
+        }
+        public void AssessmentForm(Workbook workbook)
+        {
+            string EXEpath = System.Reflection.Assembly.GetExecutingAssembly().Location;
+            string WorkDir = Path.GetDirectoryName(EXEpath);
+            string AssessmentPath = WorkDir + @"\Assessment.xlsx";
+            if (!File.Exists(AssessmentPath))
+            {
+                System.Windows.MessageBox.Show("請將考核表放置與程式同個路徑並將檔名更改為\"Assessment.xlsx\"", "Alert", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+                return;
+            }
+            string currentSheet = "儲備講師";
+            Microsoft.Office.Interop.Excel.Application app = new Microsoft.Office.Interop.Excel.Application();
+            app.DisplayAlerts = false;
+            Workbook Assessment_wb = app.Workbooks.Open(AssessmentPath, 0, false, 5, "", "", true, Microsoft.Office.Interop.Excel.XlPlatform.xlWindows, "\t", false, false, 0, true, 1, 0);
+            Worksheet Assessment_ws = Assessment_wb.Sheets[currentSheet];
+            foreach (Worksheet sheet in Assessment_wb.Worksheets)
+            {
+                if (sheet.Name == currentSheet)
+                {
+                    Worksheet addsheet =  workbook.Sheets.Add(After: workbook.Sheets[workbook.Sheets.Count]);
+                    //addsheet.Copy(After: sheet);
+                    //sheet.Copy();
+                }
+            }
+            Assessment_wb.Close();
+            app.Quit();
+            //worksheet = app.Workbooks[2].Sheets[1];
         }
         public bool CanExecute()
         {
