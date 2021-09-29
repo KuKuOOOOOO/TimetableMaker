@@ -76,6 +76,7 @@ namespace TimetableMaker.ViewModels
                 }
             }
         }
+        // Add class in the table
         public ICommand AddClassCommand
         {
             get { return new RelayCommand(AddClass, CanExecute); }
@@ -118,6 +119,55 @@ namespace TimetableMaker.ViewModels
                 EndTime = DateTime.MinValue;
             }
         }
+        // Loading classtable in Excel
+        public ICommand LoadingCommand
+        {
+            get { return new RelayCommand(LoadingExcel, CanExecute); }
+        }
+        public void LoadingExcel()
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Title = "選擇要開啟的Excel";
+            openFileDialog.Filter = "Excel活頁簿 (.xlsx)|*.xlsx";
+            openFileDialog.FilterIndex = 1;
+            openFileDialog.DefaultExt = ".xlsx";
+            openFileDialog.Multiselect = true;
+            Nullable<bool> result = openFileDialog.ShowDialog();
+            if (result == true) 
+            {
+                string path = openFileDialog.FileName;
+                Microsoft.Office.Interop.Excel.Application app = new Microsoft.Office.Interop.Excel.Application();
+                app.DisplayAlerts = false;
+                Workbook wb = app.Workbooks.Open(path, 0, false, 5, "", "", true, Microsoft.Office.Interop.Excel.XlPlatform.xlWindows, "\t", false, false, 0, true, 1, 0);
+                Worksheet ws = wb.Worksheets[1];
+                var cellValue = (string)(ws.Range["G5"]).Value;
+
+                wb.Close();
+                app.Quit();
+            }
+
+        }
+        // Preview the class
+        public ICommand PreviewCommand
+        {
+            get { return new RelayCommand(Preview, CanExecute); }
+        }
+        public void Preview()
+        {
+            if (ClassList.Count == 0)
+            {
+                System.Windows.MessageBox.Show("尚未輸入課表", "Information", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
+                return;
+            }
+            else
+            {
+                string Message = TeacherName + " 老師的課程:\n";
+                for (int i = 0; i < ClassList.Count; i++)
+                    Message += ClassList[i] + " : " + StartTimeList[i].ToString("yyyy/MM/dd-HH:mm") + " ~ " + EndTimeList[i].ToString("yyyy/MM/dd-HH:mm") + "\n";
+                System.Windows.MessageBox.Show(Message, "Information", System.Windows.MessageBoxButton.OK);
+            }
+        }
+        // Export to the Excel
         public ICommand ExportExcelCommand
         {
             get { return new RelayCommand(ExportExcel, CanExecute); }
@@ -250,6 +300,7 @@ namespace TimetableMaker.ViewModels
             string AssessmentPath = WorkDir + @"\Assessment.xlsx";
             if (File.Exists(XlsxPath))
                 File.Delete(XlsxPath);
+            // Check Assessment.xlsx is exists
             if (!File.Exists(AssessmentPath))
                 return "Error";
             string currentSheet = "儲備講師";
@@ -257,14 +308,18 @@ namespace TimetableMaker.ViewModels
             app.DisplayAlerts = false;
             Workbook wb = app.Workbooks.Add(XlWBATemplate.xlWBATWorksheet);
             Worksheet ws = wb.Worksheets[1];
+            #region Include Assessment.xlsx
+            // Open Assessment.xlsx
             Workbook Assessment_wb = app.Workbooks.Open(AssessmentPath, 0, false, 5, "", "", true, Microsoft.Office.Interop.Excel.XlPlatform.xlWindows, "\t", false, false, 0, true, 1, 0);
             Worksheet Assessment_ws = Assessment_wb.Worksheets[currentSheet];
+            // Check Assessment.xlsx's sheet have currentSheet
             foreach (Worksheet sheet in Assessment_wb.Worksheets)
             {
                 if (sheet.Name == currentSheet)
                     Assessment_ws.Copy(Type.Missing, wb.Worksheets[wb.Worksheets.Count]);
             }
-            Assessment_wb.Close();
+            Assessment_wb.Close();  // Assessment.xlsx close
+            #endregion
             try
             {
                 //Excel merge cell

@@ -32,7 +32,9 @@
             <xctk:DateTimePicker Format="Custom" FormatString="yyyy/MM/dd HH:mm" Value="{Binding StartTime}" Grid.Row="2" Grid.Column="1" TextAlignment="Center" VerticalAlignment="Center" FontSize="20"></xctk:DateTimePicker>
             <xctk:DateTimePicker Format="Custom" FormatString="yyyy/MM/dd HH:mm" Value="{Binding EndTime}" Grid.Row="3" Grid.Column="1" TextAlignment="Center" VerticalAlignment="Center" FontSize="20"></xctk:DateTimePicker>
         </Grid>
-        <Button Content="新增課程" Command="{Binding AddClassCommand}" HorizontalAlignment="Left" Height="45" FontSize="24" Margin="168,299,0,-199" VerticalAlignment="Top" Width="115" RenderTransformOrigin="1.227,0.233"/>
-        <Button Content="課表匯出" Command="{Binding ExportExcelCommand}" HorizontalAlignment="Left" Height="45" FontSize="24" Margin="491,299,0,0" VerticalAlignment="Top" Width="115" RenderTransformOrigin="1.227,0.233"/>
+        <Button Content="新增課程" Command="{Binding AddClassCommand}" HorizontalAlignment="Left" Height="45" FontSize="24" Margin="56,299,0,0" VerticalAlignment="Top" Width="115" RenderTransformOrigin="1.227,0.233"/>
+        <Button Content="課表匯出" Command="{Binding ExportExcelCommand}" HorizontalAlignment="Left" Height="45" FontSize="24" Margin="582,299,0,0" VerticalAlignment="Top" Width="115" RenderTransformOrigin="1.227,0.233"/>
+        <Button Content="預覽課表" Command="{Binding PreviewCommand}" HorizontalAlignment="Left" Height="45" FontSize="24" Margin="406,299,0,0" VerticalAlignment="Top" Width="115"  RenderTransformOrigin="1.227,0.233"/>
+        <Button Content="讀取課表" Command="{Binding LoadingCommand}" HorizontalAlignment="Left" Height="45" FontSize="24" Margin="231,299,0,0" VerticalAlignment="Top" Width="115" RenderTransformOrigin="1.227,0.233"/>
     </Grid>
 </Window>
