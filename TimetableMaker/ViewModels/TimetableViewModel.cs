@@ -140,6 +140,18 @@ namespace TimetableMaker.ViewModels
                 app.DisplayAlerts = false;
                 Workbook wb = app.Workbooks.Open(path, 0, false, 5, "", "", true, Microsoft.Office.Interop.Excel.XlPlatform.xlWindows, "\t", false, false, 0, true, 1, 0);
                 Worksheet ws = wb.Worksheets[1];
+                int InitialCell = 8, LastCell = 43;
+                for (int i = InitialCell; i < LastCell; i++)
+                {
+                    var MondayValue = (string)(ws.Range["C" + i.ToString()]).Value;
+                    if (MondayValue == null || MondayValue == "")
+                        continue;
+                    else
+                    {
+                        int index = MondayValue.IndexOf('\n');
+                        ClassName = MondayValue.Substring(0, index);
+                    }
+                }
                 var cellValue = (string)(ws.Range["G5"]).Value;
 
                 wb.Close();
