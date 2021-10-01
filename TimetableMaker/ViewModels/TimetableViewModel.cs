@@ -126,38 +126,81 @@ namespace TimetableMaker.ViewModels
         }
         public void LoadingExcel()
         {
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.Title = "選擇要開啟的Excel";
-            openFileDialog.Filter = "Excel活頁簿 (.xlsx)|*.xlsx";
-            openFileDialog.FilterIndex = 1;
-            openFileDialog.DefaultExt = ".xlsx";
-            openFileDialog.Multiselect = true;
-            Nullable<bool> result = openFileDialog.ShowDialog();
-            if (result == true) 
+            if (ClassList.Count != 0)
             {
-                string path = openFileDialog.FileName;
-                Microsoft.Office.Interop.Excel.Application app = new Microsoft.Office.Interop.Excel.Application();
-                app.DisplayAlerts = false;
-                Workbook wb = app.Workbooks.Open(path, 0, false, 5, "", "", true, Microsoft.Office.Interop.Excel.XlPlatform.xlWindows, "\t", false, false, 0, true, 1, 0);
-                Worksheet ws = wb.Worksheets[1];
-                int InitialCell = 8, LastCell = 43;
-                for (int i = InitialCell; i < LastCell; i++)
-                {
-                    var MondayValue = (string)(ws.Range["C" + i.ToString()]).Value;
-                    if (MondayValue == null || MondayValue == "")
-                        continue;
-                    else
-                    {
-                        int index = MondayValue.IndexOf('\n');
-                        ClassName = MondayValue.Substring(0, index);
-                    }
-                }
-                var cellValue = (string)(ws.Range["G5"]).Value;
-
-                wb.Close();
-                app.Quit();
+                System.Windows.MessageBox.Show("已有相關課程紀錄至程式內\n請先輸出成Excel課表後再試一次", "Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+                return;
             }
+            else
+            {
+                OpenFileDialog openFileDialog = new OpenFileDialog();
+                openFileDialog.Title = "選擇要開啟的Excel";
+                openFileDialog.Filter = "Excel活頁簿 (.xlsx)|*.xlsx";
+                openFileDialog.FilterIndex = 1;
+                openFileDialog.DefaultExt = ".xlsx";
+                openFileDialog.Multiselect = true;
+                Nullable<bool> result = openFileDialog.ShowDialog();
+                if (result == true)
+                {
+                    string path = openFileDialog.FileName;
+                    Microsoft.Office.Interop.Excel.Application app = new Microsoft.Office.Interop.Excel.Application();
+                    app.DisplayAlerts = false;
+                    Workbook wb = app.Workbooks.Open(path, 0, false, 5, "", "", true, Microsoft.Office.Interop.Excel.XlPlatform.xlWindows, "\t", false, false, 0, true, 1, 0);
+                    Worksheet ws = wb.Worksheets[1];
+                    try
+                    {
+                        int InitialCell = 8, LastCell = 43;
+                        var TeacherValue = (string)(ws.Range["A3"]).Value;
+                        if (TeacherValue == null || TeacherValue == "")
+                        {
+                            System.Windows.MessageBox.Show("無法找到教師名稱\n請確認課表是否正確", "Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+                            return;
+                        }
+                        else
+                        {
+                            TeacherValue = TeacherValue.Substring(0, TeacherValue.IndexOf(' '));
+                            TeacherName = TeacherValue;
+                        }
+                        // Monday
+                        for (int i = InitialCell; i < LastCell; i++)
+                        {
+                            var MondayValue = (string)(ws.Range["C" + i.ToString()]).Value;
+                            if (MondayValue == null || MondayValue == "")
+                                continue;
+                            else
+                            {
+                                if (ClassList.Contains(MondayValue.Substring(0, MondayValue.IndexOf('\n'))))
+                                    continue;
+                                else
+                                {
+                                    ClassList.Add(MondayValue.Substring(0, MondayValue.IndexOf('\n')));
+                                    string StringDate = MondayValue.Substring(MondayValue.IndexOf('\n') + 1);
+                                    string StringStartDate = StringDate.Substring(0, StringDate.IndexOf('~'));
+                                    string StringEndDate = StringDate.Substring(StringDate.IndexOf('~') + 1);
+                                    string StringComment = (string)ws.Range["C" + i.ToString()].Comment.Text();
+                                    string StringStartTime = StringComment.Substring(0, StringComment.IndexOf("~"));
+                                    string StringEndTime = StringComment.Substring(StringComment.IndexOf('~') + 1);
+                                    DateTime StartDateTime = DateTime.Parse(StringStartDate).Add(TimeSpan.Parse(StringStartTime));
+                                    DateTime EndDateTime = DateTime.Parse(StringEndDate).Add(TimeSpan.Parse(StringEndTime));
+                                    StartTimeList.Add(StartDateTime);
+                                    EndTimeList.Add(EndDateTime);
+                                }
+                            }
+                        }
+                        System.Windows.MessageBox.Show("讀取完成\n點擊預覽課表可確認相關課程", "Information", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
+                        wb.Close();
+                        app.Quit();
+                    }
+                    catch(Exception ex)
+                    {
+                        System.Windows.MessageBox.Show("請確認讀取的檔案是否正確無誤(***課表.xlsx)\n" + ex.ToString(), "Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+                        wb.Close();
+                        app.Quit();
+                        return;
+                    }
 
+                }
+            }
         }
         // Preview the class
         public ICommand PreviewCommand
@@ -227,25 +270,47 @@ namespace TimetableMaker.ViewModels
                             switch (StartTimeWeek)
                             {
                                 case "星期一":
-                                    ws.Range["C" + (InititalCell + (DecreaseTime * 3)).ToString()].Value = ClassList[j].ToString() + "\n" + StartTimeList[j].ToString("MM/dd") + " ~ " + EndTimeList[j].ToString("MM/dd");
+                                    {
+                                        ws.Range["C" + (InititalCell + (DecreaseTime * 3)).ToString()].Value = ClassList[j].ToString() + "\n" + StartTimeList[j].ToString("MM/dd") + " ~ " + EndTimeList[j].ToString("MM/dd");
+                                        ws.Range["C" + (InititalCell + (DecreaseTime * 3)).ToString()].AddComment(StartTimeList[j].ToString("HH:mm") + " ~ " + EndTimeList[j].ToString("HH:mm"));
+                                    }
                                     break;
                                 case "星期二":
-                                    ws.Range["E" + (InititalCell + (DecreaseTime * 3)).ToString()].Value = ClassList[j].ToString() + "\n" + StartTimeList[j].ToString("MM/dd") + " ~ " + EndTimeList[j].ToString("MM/dd");
+                                    {
+                                        ws.Range["E" + (InititalCell + (DecreaseTime * 3)).ToString()].Value = ClassList[j].ToString() + "\n" + StartTimeList[j].ToString("MM/dd") + " ~ " + EndTimeList[j].ToString("MM/dd");
+                                        ws.Range["E" + (InititalCell + (DecreaseTime * 3)).ToString()].AddComment(StartTimeList[j].ToString("HH:mm") + " ~ " + EndTimeList[j].ToString("HH:mm"));
+                                    }
                                     break;
                                 case "星期三":
-                                    ws.Range["G" + (InititalCell + (DecreaseTime * 3)).ToString()].Value = ClassList[j].ToString() + "\n" + StartTimeList[j].ToString("MM/dd") + " ~ " + EndTimeList[j].ToString("MM/dd");
+                                    {
+                                        ws.Range["G" + (InititalCell + (DecreaseTime * 3)).ToString()].Value = ClassList[j].ToString() + "\n" + StartTimeList[j].ToString("MM/dd") + " ~ " + EndTimeList[j].ToString("MM/dd");
+                                        ws.Range["G" + (InititalCell + (DecreaseTime * 3)).ToString()].AddComment(StartTimeList[j].ToString("HH:mm") + " ~ " + EndTimeList[j].ToString("HH:mm"));
+                                    }
                                     break;
                                 case "星期四":
-                                    ws.Range["I" + (InititalCell + (DecreaseTime * 3)).ToString()].Value = ClassList[j].ToString() + "\n" + StartTimeList[j].ToString("MM/dd") + " ~ " + EndTimeList[j].ToString("MM/dd");
+                                    {
+                                        ws.Range["I" + (InititalCell + (DecreaseTime * 3)).ToString()].Value = ClassList[j].ToString() + "\n" + StartTimeList[j].ToString("MM/dd") + " ~ " + EndTimeList[j].ToString("MM/dd");
+                                        ws.Range["I" + (InititalCell + (DecreaseTime * 3)).ToString()].AddComment(StartTimeList[j].ToString("HH:mm") + " ~ " + EndTimeList[j].ToString("HH:mm"));
+                                    }
                                     break;
                                 case "星期五":
-                                    ws.Range["K" + (InititalCell + (DecreaseTime * 3)).ToString()].Value = ClassList[j].ToString() + "\n" + StartTimeList[j].ToString("MM/dd") + " ~ " + EndTimeList[j].ToString("MM/dd");
+                                    {
+                                        ws.Range["K" + (InititalCell + (DecreaseTime * 3)).ToString()].Value = ClassList[j].ToString() + "\n" + StartTimeList[j].ToString("MM/dd") + " ~ " + EndTimeList[j].ToString("MM/dd");
+                                        ws.Range["K" + (InititalCell + (DecreaseTime * 3)).ToString()].AddComment(StartTimeList[j].ToString("HH:mm") + " ~ " + EndTimeList[j].ToString("HH:mm"));
+                                    }
+                                    
                                     break;
                                 case "星期六":
-                                    ws.Range["M" + (InititalCell + (DecreaseTime * 3)).ToString()].Value = ClassList[j].ToString() + "\n" + StartTimeList[j].ToString("MM/dd") + " ~ " + EndTimeList[j].ToString("MM/dd");
+                                    {
+                                        ws.Range["M" + (InititalCell + (DecreaseTime * 3)).ToString()].Value = ClassList[j].ToString() + "\n" + StartTimeList[j].ToString("MM/dd") + " ~ " + EndTimeList[j].ToString("MM/dd");
+                                        ws.Range["M" + (InititalCell + (DecreaseTime * 3)).ToString()].AddComment(StartTimeList[j].ToString("HH:mm") + " ~ " + EndTimeList[j].ToString("HH:mm"));
+                                    }
                                     break;
                                 case "星期日":
-                                    ws.Range["O" + (InititalCell + (DecreaseTime * 3)).ToString()].Value = ClassList[j].ToString() + "\n" + StartTimeList[j].ToString("MM/dd") + " ~ " + EndTimeList[j].ToString("MM/dd");
+                                    {
+                                        ws.Range["O" + (InititalCell + (DecreaseTime * 3)).ToString()].Value = ClassList[j].ToString() + "\n" + StartTimeList[j].ToString("MM/dd") + " ~ " + EndTimeList[j].ToString("MM/dd");
+                                        ws.Range["O" + (InititalCell + (DecreaseTime * 3)).ToString()].AddComment(StartTimeList[j].ToString("HH:mm") + " ~ " + EndTimeList[j].ToString("HH:mm"));
+                                    }
                                     break;
                             }
                             if (DecreaseTime > 0)
