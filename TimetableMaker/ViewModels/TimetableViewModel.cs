@@ -161,6 +161,7 @@ namespace TimetableMaker.ViewModels
                             TeacherValue = TeacherValue.Substring(0, TeacherValue.IndexOf(' '));
                             TeacherName = TeacherValue;
                         }
+                        #region Loading all class function
                         // Monday
                         for (int i = InitialCell; i < LastCell; i++)
                         {
@@ -187,6 +188,164 @@ namespace TimetableMaker.ViewModels
                                 }
                             }
                         }
+                        // Tuesday
+                        for (int i = InitialCell; i < LastCell; i++)
+                        {
+                            var TuesdayValue = (string)(ws.Range["E" + i.ToString()]).Value;
+                            if (TuesdayValue == null || TuesdayValue == "")
+                                continue;
+                            else
+                            {
+                                if (ClassList.Contains(TuesdayValue.Substring(0, TuesdayValue.IndexOf('\n'))))
+                                    continue;
+                                else
+                                {
+                                    ClassList.Add(TuesdayValue.Substring(0, TuesdayValue.IndexOf('\n')));
+                                    string StringDate = TuesdayValue.Substring(TuesdayValue.IndexOf('\n') + 1);
+                                    string StringStartDate = StringDate.Substring(0, StringDate.IndexOf('~'));
+                                    string StringEndDate = StringDate.Substring(StringDate.IndexOf('~') + 1);
+                                    string StringComment = (string)ws.Range["E" + i.ToString()].Comment.Text();
+                                    string StringStartTime = StringComment.Substring(0, StringComment.IndexOf("~"));
+                                    string StringEndTime = StringComment.Substring(StringComment.IndexOf('~') + 1);
+                                    DateTime StartDateTime = DateTime.Parse(StringStartDate).Add(TimeSpan.Parse(StringStartTime));
+                                    DateTime EndDateTime = DateTime.Parse(StringEndDate).Add(TimeSpan.Parse(StringEndTime));
+                                    StartTimeList.Add(StartDateTime);
+                                    EndTimeList.Add(EndDateTime);
+                                }
+                            }
+                        }
+                        // Wednesday
+                        for (int i = InitialCell; i < LastCell; i++)
+                        {
+                            var WednesdayValue = (string)(ws.Range["G" + i.ToString()]).Value;
+                            if (WednesdayValue == null || WednesdayValue == "")
+                                continue;
+                            else
+                            {
+                                if (ClassList.Contains(WednesdayValue.Substring(0, WednesdayValue.IndexOf('\n'))))
+                                    continue;
+                                else
+                                {
+                                    ClassList.Add(WednesdayValue.Substring(0, WednesdayValue.IndexOf('\n')));
+                                    string StringDate = WednesdayValue.Substring(WednesdayValue.IndexOf('\n') + 1);
+                                    string StringStartDate = StringDate.Substring(0, StringDate.IndexOf('~'));
+                                    string StringEndDate = StringDate.Substring(StringDate.IndexOf('~') + 1);
+                                    string StringComment = (string)ws.Range["G" + i.ToString()].Comment.Text();
+                                    string StringStartTime = StringComment.Substring(0, StringComment.IndexOf("~"));
+                                    string StringEndTime = StringComment.Substring(StringComment.IndexOf('~') + 1);
+                                    DateTime StartDateTime = DateTime.Parse(StringStartDate).Add(TimeSpan.Parse(StringStartTime));
+                                    DateTime EndDateTime = DateTime.Parse(StringEndDate).Add(TimeSpan.Parse(StringEndTime));
+                                    StartTimeList.Add(StartDateTime);
+                                    EndTimeList.Add(EndDateTime);
+                                }
+                            }
+                        }
+                        // Thursday
+                        for (int i = InitialCell; i < LastCell; i++)
+                        {
+                            var ThursdayValue = (string)(ws.Range["I" + i.ToString()]).Value;
+                            if (ThursdayValue == null || ThursdayValue == "")
+                                continue;
+                            else
+                            {
+                                if (ClassList.Contains(ThursdayValue.Substring(0, ThursdayValue.IndexOf('\n'))))
+                                    continue;
+                                else
+                                {
+                                    ClassList.Add(ThursdayValue.Substring(0, ThursdayValue.IndexOf('\n')));
+                                    string StringDate = ThursdayValue.Substring(ThursdayValue.IndexOf('\n') + 1);
+                                    string StringStartDate = StringDate.Substring(0, StringDate.IndexOf('~'));
+                                    string StringEndDate = StringDate.Substring(StringDate.IndexOf('~') + 1);
+                                    string StringComment = (string)ws.Range["I" + i.ToString()].Comment.Text();
+                                    string StringStartTime = StringComment.Substring(0, StringComment.IndexOf("~"));
+                                    string StringEndTime = StringComment.Substring(StringComment.IndexOf('~') + 1);
+                                    DateTime StartDateTime = DateTime.Parse(StringStartDate).Add(TimeSpan.Parse(StringStartTime));
+                                    DateTime EndDateTime = DateTime.Parse(StringEndDate).Add(TimeSpan.Parse(StringEndTime));
+                                    StartTimeList.Add(StartDateTime);
+                                    EndTimeList.Add(EndDateTime);
+                                }
+                            }
+                        }
+                        // Friday
+                        for (int i = InitialCell; i < LastCell; i++)
+                        {
+                            var FridayValue = (string)(ws.Range["K" + i.ToString()]).Value;
+                            if (FridayValue == null || FridayValue == "")
+                                continue;
+                            else
+                            {
+                                if (ClassList.Contains(FridayValue.Substring(0, FridayValue.IndexOf('\n'))))
+                                    continue;
+                                else
+                                {
+                                    ClassList.Add(FridayValue.Substring(0, FridayValue.IndexOf('\n')));
+                                    string StringDate = FridayValue.Substring(FridayValue.IndexOf('\n') + 1);
+                                    string StringStartDate = StringDate.Substring(0, StringDate.IndexOf('~'));
+                                    string StringEndDate = StringDate.Substring(StringDate.IndexOf('~') + 1);
+                                    string StringComment = (string)ws.Range["K" + i.ToString()].Comment.Text();
+                                    string StringStartTime = StringComment.Substring(0, StringComment.IndexOf("~"));
+                                    string StringEndTime = StringComment.Substring(StringComment.IndexOf('~') + 1);
+                                    DateTime StartDateTime = DateTime.Parse(StringStartDate).Add(TimeSpan.Parse(StringStartTime));
+                                    DateTime EndDateTime = DateTime.Parse(StringEndDate).Add(TimeSpan.Parse(StringEndTime));
+                                    StartTimeList.Add(StartDateTime);
+                                    EndTimeList.Add(EndDateTime);
+                                }
+                            }
+                        }
+                        // Saturday
+                        for (int i = InitialCell; i < LastCell; i++)
+                        {
+                            var SaturdayValue = (string)(ws.Range["M" + i.ToString()]).Value;
+                            if (SaturdayValue == null || SaturdayValue == "")
+                                continue;
+                            else
+                            {
+                                if (ClassList.Contains(SaturdayValue.Substring(0, SaturdayValue.IndexOf('\n'))))
+                                    continue;
+                                else
+                                {
+                                    ClassList.Add(SaturdayValue.Substring(0, SaturdayValue.IndexOf('\n')));
+                                    string StringDate = SaturdayValue.Substring(SaturdayValue.IndexOf('\n') + 1);
+                                    string StringStartDate = StringDate.Substring(0, StringDate.IndexOf('~'));
+                                    string StringEndDate = StringDate.Substring(StringDate.IndexOf('~') + 1);
+                                    string StringComment = (string)ws.Range["M" + i.ToString()].Comment.Text();
+                                    string StringStartTime = StringComment.Substring(0, StringComment.IndexOf("~"));
+                                    string StringEndTime = StringComment.Substring(StringComment.IndexOf('~') + 1);
+                                    DateTime StartDateTime = DateTime.Parse(StringStartDate).Add(TimeSpan.Parse(StringStartTime));
+                                    DateTime EndDateTime = DateTime.Parse(StringEndDate).Add(TimeSpan.Parse(StringEndTime));
+                                    StartTimeList.Add(StartDateTime);
+                                    EndTimeList.Add(EndDateTime);
+                                }
+                            }
+                        }
+                        // Sunday
+                        for (int i = InitialCell; i < LastCell; i++)
+                        {
+                            var SundayValue = (string)(ws.Range["O" + i.ToString()]).Value;
+                            if (SundayValue == null || SundayValue == "")
+                                continue;
+                            else
+                            {
+                                if (ClassList.Contains(SundayValue.Substring(0, SundayValue.IndexOf('\n'))))
+                                    continue;
+                                else
+                                {
+                                    ClassList.Add(SundayValue.Substring(0, SundayValue.IndexOf('\n')));
+                                    string StringDate = SundayValue.Substring(SundayValue.IndexOf('\n') + 1);
+                                    string StringStartDate = StringDate.Substring(0, StringDate.IndexOf('~'));
+                                    string StringEndDate = StringDate.Substring(StringDate.IndexOf('~') + 1);
+                                    string StringComment = (string)ws.Range["O" + i.ToString()].Comment.Text();
+                                    string StringStartTime = StringComment.Substring(0, StringComment.IndexOf("~"));
+                                    string StringEndTime = StringComment.Substring(StringComment.IndexOf('~') + 1);
+                                    DateTime StartDateTime = DateTime.Parse(StringStartDate).Add(TimeSpan.Parse(StringStartTime));
+                                    DateTime EndDateTime = DateTime.Parse(StringEndDate).Add(TimeSpan.Parse(StringEndTime));
+                                    StartTimeList.Add(StartDateTime);
+                                    EndTimeList.Add(EndDateTime);
+                                }
+                            }
+                        }
+                        #endregion
+
                         System.Windows.MessageBox.Show("讀取完成\n點擊預覽課表可確認相關課程", "Information", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
                         wb.Close();
                         app.Quit();
