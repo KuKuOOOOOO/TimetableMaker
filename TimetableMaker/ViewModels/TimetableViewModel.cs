@@ -149,7 +149,7 @@ namespace TimetableMaker.ViewModels
                     Worksheet ws = wb.Worksheets[1];
                     try
                     {
-                        int InitialCell = 8, LastCell = 43;
+                        int InitialCell = 8, LastCell = 79;
                         var TeacherValue = (string)(ws.Range["A3"]).Value;
                         if (TeacherValue == null || TeacherValue == "")
                         {
@@ -345,7 +345,6 @@ namespace TimetableMaker.ViewModels
                             }
                         }
                         #endregion
-
                         System.Windows.MessageBox.Show("讀取完成\n點擊預覽課表可確認相關課程", "Information", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
                         wb.Close();
                         app.Quit();
@@ -409,9 +408,9 @@ namespace TimetableMaker.ViewModels
             }
             // Print Class name
             int InititalCell = 8;   // Time initial's Cell is A8
-            for (int i = 0; i < 12; i++)
+            for (int i = 0; i < 72; i++)
             {
-                var StringCellTime = (string)(ws.Range["A" + (InititalCell + (i * 3)).ToString()] as Microsoft.Office.Interop.Excel.Range).Value;
+                var StringCellTime = (string)(ws.Range["A" + (InititalCell + i).ToString()] as Microsoft.Office.Interop.Excel.Range).Value;
                 string[] CellTimeArray = StringCellTime.Split(new char[2] { ' ', '~' }, StringSplitOptions.RemoveEmptyEntries);
                 DateTime CellStartTime = DateTime.ParseExact(CellTimeArray[0], "HH:mm", null);
                 DateTime CellEndTime = DateTime.ParseExact(CellTimeArray[1], "HH:mm", null);
@@ -419,56 +418,99 @@ namespace TimetableMaker.ViewModels
                 DateTime CellTime = DateTime.Now; //DateTime.FromOADate(DoubleCellTime);
                 for (int j = 0; j < EndTimeList.Count; j++)
                 {
-                    if (CellEndTime.Hour == EndTimeList[j].Hour)
+                    if (CellEndTime.ToString("HH:mm") == EndTimeList[j].ToString("HH:mm"))
                     {
-                        int Span = EndTimeList[j].Hour - StartTimeList[j].Hour;
+                        Console.WriteLine("YES");
+                        double DoubleSpan = (EndTimeList[j].TimeOfDay - StartTimeList[j].TimeOfDay).TotalMinutes;
+                        int Span = Convert.ToInt32(DoubleSpan / 10);
                         int DecreaseTime = i;
                         for (int k = Span; k > 0; k--)
                         {
                             string StartTimeWeek = System.Globalization.DateTimeFormatInfo.GetInstance(new System.Globalization.CultureInfo("zh-TW")).DayNames[(byte)StartTimeList[j].DayOfWeek];
-                            switch (StartTimeWeek)
+                            switch(StartTimeWeek)
                             {
                                 case "星期一":
                                     {
-                                        ws.Range["C" + (InititalCell + (DecreaseTime * 3)).ToString()].Value = ClassList[j].ToString() + "\n" + StartTimeList[j].ToString("MM/dd") + " ~ " + EndTimeList[j].ToString("MM/dd");
-                                        ws.Range["C" + (InititalCell + (DecreaseTime * 3)).ToString()].AddComment(StartTimeList[j].ToString("HH:mm") + " ~ " + EndTimeList[j].ToString("HH:mm"));
+                                        ws.Range["C" + (InititalCell + DecreaseTime).ToString()].Value = ClassList[j].ToString() + "\n" + StartTimeList[j].ToString("MM/dd") + " ~ " + EndTimeList[j].ToString("MM/dd");
+                                        ws.Range["C" + (InititalCell + DecreaseTime).ToString()].AddComment(StartTimeList[j].ToString("HH:mm") + " ~ " + EndTimeList[j].ToString("HH:mm"));
+                                        if (k == 1)
+                                        {
+                                            ws.Range["C" + (InititalCell + DecreaseTime).ToString() + ":D" + (InititalCell + DecreaseTime + Span - 1).ToString()].WrapText = false;
+                                            ws.Range["C" + (InititalCell + DecreaseTime).ToString() + ":D" + (InititalCell + DecreaseTime + Span - 1).ToString()].Merge();
+                                            ws.Range["C" + (InititalCell + DecreaseTime).ToString() + ":D" + (InititalCell + DecreaseTime + Span - 1).ToString()].WrapText = true;
+                                        }
                                     }
                                     break;
                                 case "星期二":
                                     {
-                                        ws.Range["E" + (InititalCell + (DecreaseTime * 3)).ToString()].Value = ClassList[j].ToString() + "\n" + StartTimeList[j].ToString("MM/dd") + " ~ " + EndTimeList[j].ToString("MM/dd");
-                                        ws.Range["E" + (InititalCell + (DecreaseTime * 3)).ToString()].AddComment(StartTimeList[j].ToString("HH:mm") + " ~ " + EndTimeList[j].ToString("HH:mm"));
+                                        ws.Range["E" + (InititalCell + DecreaseTime).ToString()].Value = ClassList[j].ToString() + "\n" + StartTimeList[j].ToString("MM/dd") + " ~ " + EndTimeList[j].ToString("MM/dd");
+                                        ws.Range["E" + (InititalCell + DecreaseTime).ToString()].AddComment(StartTimeList[j].ToString("HH:mm") + " ~ " + EndTimeList[j].ToString("HH:mm"));
+                                        if (k == 1)
+                                        {
+                                            ws.Range["E" + (InititalCell + DecreaseTime).ToString() + ":F" + (InititalCell + DecreaseTime + Span - 1).ToString()].WrapText = false;
+                                            ws.Range["E" + (InititalCell + DecreaseTime).ToString() + ":F" + (InititalCell + DecreaseTime + Span - 1).ToString()].Merge();
+                                            ws.Range["E" + (InititalCell + DecreaseTime).ToString() + ":F" + (InititalCell + DecreaseTime + Span - 1).ToString()].WrapText = true;
+                                        }
                                     }
                                     break;
                                 case "星期三":
                                     {
-                                        ws.Range["G" + (InititalCell + (DecreaseTime * 3)).ToString()].Value = ClassList[j].ToString() + "\n" + StartTimeList[j].ToString("MM/dd") + " ~ " + EndTimeList[j].ToString("MM/dd");
-                                        ws.Range["G" + (InititalCell + (DecreaseTime * 3)).ToString()].AddComment(StartTimeList[j].ToString("HH:mm") + " ~ " + EndTimeList[j].ToString("HH:mm"));
+                                        ws.Range["G" + (InititalCell + DecreaseTime).ToString()].Value = ClassList[j].ToString() + "\n" + StartTimeList[j].ToString("MM/dd") + " ~ " + EndTimeList[j].ToString("MM/dd");
+                                        ws.Range["G" + (InititalCell + DecreaseTime).ToString()].AddComment(StartTimeList[j].ToString("HH:mm") + " ~ " + EndTimeList[j].ToString("HH:mm"));
+                                        if (k == 1)
+                                        {
+                                            ws.Range["G" + (InititalCell + DecreaseTime).ToString() + ":H" + (InititalCell + DecreaseTime + Span - 1).ToString()].WrapText = false;
+                                            ws.Range["G" + (InititalCell + DecreaseTime).ToString() + ":H" + (InititalCell + DecreaseTime + Span - 1).ToString()].Merge();
+                                            ws.Range["G" + (InititalCell + DecreaseTime).ToString() + ":H" + (InititalCell + DecreaseTime + Span - 1).ToString()].WrapText = true;
+                                        }
                                     }
                                     break;
                                 case "星期四":
                                     {
-                                        ws.Range["I" + (InititalCell + (DecreaseTime * 3)).ToString()].Value = ClassList[j].ToString() + "\n" + StartTimeList[j].ToString("MM/dd") + " ~ " + EndTimeList[j].ToString("MM/dd");
-                                        ws.Range["I" + (InititalCell + (DecreaseTime * 3)).ToString()].AddComment(StartTimeList[j].ToString("HH:mm") + " ~ " + EndTimeList[j].ToString("HH:mm"));
+                                        ws.Range["I" + (InititalCell + DecreaseTime).ToString()].Value = ClassList[j].ToString() + "\n" + StartTimeList[j].ToString("MM/dd") + " ~ " + EndTimeList[j].ToString("MM/dd");
+                                        ws.Range["I" + (InititalCell + DecreaseTime).ToString()].AddComment(StartTimeList[j].ToString("HH:mm") + " ~ " + EndTimeList[j].ToString("HH:mm"));
+                                        if (k == 1)
+                                        {
+                                            ws.Range["I" + (InititalCell + DecreaseTime).ToString() + ":J" + (InititalCell + DecreaseTime + Span - 1).ToString()].WrapText = false;
+                                            ws.Range["I" + (InititalCell + DecreaseTime).ToString() + ":J" + (InititalCell + DecreaseTime + Span - 1).ToString()].Merge();
+                                            ws.Range["I" + (InititalCell + DecreaseTime).ToString() + ":J" + (InititalCell + DecreaseTime + Span - 1).ToString()].WrapText = true;
+                                        }
                                     }
                                     break;
                                 case "星期五":
                                     {
-                                        ws.Range["K" + (InititalCell + (DecreaseTime * 3)).ToString()].Value = ClassList[j].ToString() + "\n" + StartTimeList[j].ToString("MM/dd") + " ~ " + EndTimeList[j].ToString("MM/dd");
-                                        ws.Range["K" + (InititalCell + (DecreaseTime * 3)).ToString()].AddComment(StartTimeList[j].ToString("HH:mm") + " ~ " + EndTimeList[j].ToString("HH:mm"));
+                                        ws.Range["K" + (InititalCell + DecreaseTime).ToString()].Value = ClassList[j].ToString() + "\n" + StartTimeList[j].ToString("MM/dd") + " ~ " + EndTimeList[j].ToString("MM/dd");
+                                        ws.Range["K" + (InititalCell + DecreaseTime).ToString()].AddComment(StartTimeList[j].ToString("HH:mm") + " ~ " + EndTimeList[j].ToString("HH:mm"));
+                                        if (k == 1)
+                                        {
+                                            ws.Range["K" + (InititalCell + DecreaseTime).ToString() + ":L" + (InititalCell + DecreaseTime + Span - 1).ToString()].WrapText = false;
+                                            ws.Range["K" + (InititalCell + DecreaseTime).ToString() + ":L" + (InititalCell + DecreaseTime + Span - 1).ToString()].Merge();
+                                            ws.Range["K" + (InititalCell + DecreaseTime).ToString() + ":L" + (InititalCell + DecreaseTime + Span - 1).ToString()].WrapText = true;
+                                        }
                                     }
-                                    
                                     break;
                                 case "星期六":
                                     {
-                                        ws.Range["M" + (InititalCell + (DecreaseTime * 3)).ToString()].Value = ClassList[j].ToString() + "\n" + StartTimeList[j].ToString("MM/dd") + " ~ " + EndTimeList[j].ToString("MM/dd");
-                                        ws.Range["M" + (InititalCell + (DecreaseTime * 3)).ToString()].AddComment(StartTimeList[j].ToString("HH:mm") + " ~ " + EndTimeList[j].ToString("HH:mm"));
+                                        ws.Range["M" + (InititalCell + DecreaseTime).ToString()].Value = ClassList[j].ToString() + "\n" + StartTimeList[j].ToString("MM/dd") + " ~ " + EndTimeList[j].ToString("MM/dd");
+                                        ws.Range["M" + (InititalCell + DecreaseTime).ToString()].AddComment(StartTimeList[j].ToString("HH:mm") + " ~ " + EndTimeList[j].ToString("HH:mm"));
+                                        if (k == 1)
+                                        {
+                                            ws.Range["M" + (InititalCell + DecreaseTime).ToString() + ":N" + (InititalCell + DecreaseTime + Span - 1).ToString()].WrapText = false;
+                                            ws.Range["M" + (InititalCell + DecreaseTime).ToString() + ":N" + (InititalCell + DecreaseTime + Span - 1).ToString()].Merge();
+                                            ws.Range["M" + (InititalCell + DecreaseTime).ToString() + ":N" + (InititalCell + DecreaseTime + Span - 1).ToString()].WrapText = true;
+                                        }
                                     }
                                     break;
                                 case "星期日":
                                     {
-                                        ws.Range["O" + (InititalCell + (DecreaseTime * 3)).ToString()].Value = ClassList[j].ToString() + "\n" + StartTimeList[j].ToString("MM/dd") + " ~ " + EndTimeList[j].ToString("MM/dd");
-                                        ws.Range["O" + (InititalCell + (DecreaseTime * 3)).ToString()].AddComment(StartTimeList[j].ToString("HH:mm") + " ~ " + EndTimeList[j].ToString("HH:mm"));
+                                        ws.Range["O" + (InititalCell + DecreaseTime).ToString()].Value = ClassList[j].ToString() + "\n" + StartTimeList[j].ToString("MM/dd") + " ~ " + EndTimeList[j].ToString("MM/dd");
+                                        ws.Range["O" + (InititalCell + DecreaseTime).ToString()].AddComment(StartTimeList[j].ToString("HH:mm") + " ~ " + EndTimeList[j].ToString("HH:mm"));
+                                        if (k == 1)
+                                        {
+                                            ws.Range["O" + (InititalCell + DecreaseTime).ToString() + ":P" + (InititalCell + DecreaseTime + Span - 1).ToString()].WrapText = false;
+                                            ws.Range["O" + (InititalCell + DecreaseTime).ToString() + ":P" + (InititalCell + DecreaseTime + Span - 1).ToString()].Merge();
+                                            ws.Range["O" + (InititalCell + DecreaseTime).ToString() + ":P" + (InititalCell + DecreaseTime + Span - 1).ToString()].WrapText = true;
+                                        }
                                     }
                                     break;
                             }
@@ -558,27 +600,36 @@ namespace TimetableMaker.ViewModels
             #endregion
             try
             {
-                //Excel merge cell
+                // Excel merge cell
                 ws.Range["A1:P2"].Merge();
                 ws.Range["A3:P4"].Merge();
-                for (int i = 1; i <= 39; i += 3)
+                // Week Merge
+                ws.Range["A5:B7"].Merge();
+                ws.Range["C5:D7"].Merge();
+                ws.Range["E5:F7"].Merge();
+                ws.Range["G5:H7"].Merge();
+                ws.Range["I5:J7"].Merge();
+                ws.Range["K5:L7"].Merge();
+                ws.Range["M5:N7"].Merge();
+                ws.Range["O5:P7"].Merge();
+                for (int i = 1; i <= 72; i++)
                 {
-                    ws.Range["A" + (i + 4).ToString() + ":B" + (i + 6).ToString()].Merge();
-                    ws.Range["C" + (i + 4).ToString() + ":D" + (i + 6).ToString()].Merge();
-                    ws.Range["E" + (i + 4).ToString() + ":F" + (i + 6).ToString()].Merge();
-                    ws.Range["G" + (i + 4).ToString() + ":H" + (i + 6).ToString()].Merge();
-                    ws.Range["I" + (i + 4).ToString() + ":J" + (i + 6).ToString()].Merge();
-                    ws.Range["K" + (i + 4).ToString() + ":L" + (i + 6).ToString()].Merge();
-                    ws.Range["M" + (i + 4).ToString() + ":N" + (i + 6).ToString()].Merge();
-                    ws.Range["O" + (i + 4).ToString() + ":P" + (i + 6).ToString()].Merge();
+                    ws.Range["A" + (i + 7).ToString() + ":B" + (i + 7).ToString()].Merge();
+                    ws.Range["C" + (i + 7).ToString() + ":D" + (i + 7).ToString()].Merge();
+                    ws.Range["E" + (i + 7).ToString() + ":F" + (i + 7).ToString()].Merge();
+                    ws.Range["G" + (i + 7).ToString() + ":H" + (i + 7).ToString()].Merge();
+                    ws.Range["I" + (i + 7).ToString() + ":J" + (i + 7).ToString()].Merge();
+                    ws.Range["K" + (i + 7).ToString() + ":L" + (i + 7).ToString()].Merge();
+                    ws.Range["M" + (i + 7).ToString() + ":N" + (i + 7).ToString()].Merge();
+                    ws.Range["O" + (i + 7).ToString() + ":P" + (i + 7).ToString()].Merge();
                 }
                 //Excel border's line style
-                ws.Range["A1:P43"].Borders.LineStyle = XlLineStyle.xlContinuous;
+                ws.Range["A1:P79"].Borders.LineStyle = XlLineStyle.xlContinuous;
 
                 ws.Range["A1:P2"].Cells.Interior.Color = XlRgbColor.rgbMediumAquamarine;
                 ws.Range["A3:P4"].Cells.Interior.Color = XlRgbColor.rgbMistyRose;
                 ws.Range["C5:P7"].Cells.Interior.Color = XlRgbColor.rgbLightGoldenrodYellow;
-                ws.Range["A8:B43"].Cells.Interior.Color = XlRgbColor.rgbHoneydew;
+                ws.Range["A8:B79"].Cells.Interior.Color = XlRgbColor.rgbHoneydew;
                 #region Excel cell text
                 ws.Range["A1"].Value = "課表產生器";
                 //Week
@@ -590,20 +641,80 @@ namespace TimetableMaker.ViewModels
                 ws.Range["M5"].Value = "星期六";
                 ws.Range["O5"].Value = "星期日";
                 //Section
-                ws.Range["A8"].Value = "08:00 ~ 09:00";
-                ws.Range["A11"].Value = "09:00 ~ 10:00";
-                ws.Range["A14"].Value = "10:00 ~ 11:00";
-                ws.Range["A17"].Value = "11:00 ~ 12:00";
-                ws.Range["A20"].Value = "13:00 ~ 14:00";
-                ws.Range["A23"].Value = "14:00 ~ 15:00";
-                ws.Range["A26"].Value = "15:00 ~ 16:00";
-                ws.Range["A29"].Value = "16:00 ~ 17:00";
-                ws.Range["A32"].Value = "17:00 ~ 18:00";
-                ws.Range["A35"].Value = "18:00 ~ 19:00";
-                ws.Range["A38"].Value = "19:00 ~ 20:00";
-                ws.Range["A41"].Value = "20:00 ~ 21:00";
+                ws.Range["A8"].Value = "08:00 ~ 08:10";
+                ws.Range["A9"].Value = "08:10 ~ 08:20";
+                ws.Range["A10"].Value = "08:20 ~ 08:30";
+                ws.Range["A11"].Value = "08:30 ~ 08:40";
+                ws.Range["A12"].Value = "08:40 ~ 08:50";
+                ws.Range["A13"].Value = "08:50 ~ 09:00";
+                ws.Range["A14"].Value = "09:00 ~ 09:10";
+                ws.Range["A15"].Value = "09:10 ~ 09:20";
+                ws.Range["A16"].Value = "09:20 ~ 09:30";
+                ws.Range["A17"].Value = "09:30 ~ 09:40";
+                ws.Range["A18"].Value = "09:40 ~ 09:50";
+                ws.Range["A19"].Value = "09:50 ~ 10:00";
+                ws.Range["A20"].Value = "10:00 ~ 10:10";
+                ws.Range["A21"].Value = "10:10 ~ 10:20";
+                ws.Range["A22"].Value = "10:20 ~ 10:30";
+                ws.Range["A23"].Value = "10:30 ~ 10:40";
+                ws.Range["A24"].Value = "10:40 ~ 10:50";
+                ws.Range["A25"].Value = "10:50 ~ 11:00";
+                ws.Range["A26"].Value = "11:00 ~ 11:10";
+                ws.Range["A27"].Value = "11:10 ~ 11:20";
+                ws.Range["A28"].Value = "11:20 ~ 11:30";
+                ws.Range["A29"].Value = "11:30 ~ 11:40";
+                ws.Range["A30"].Value = "11:40 ~ 11:50";
+                ws.Range["A31"].Value = "11:50 ~ 12:00";
+                ws.Range["A32"].Value = "13:00 ~ 13:10";
+                ws.Range["A33"].Value = "13:10 ~ 13:20";
+                ws.Range["A34"].Value = "13:20 ~ 13:30";
+                ws.Range["A35"].Value = "13:30 ~ 13:40";
+                ws.Range["A36"].Value = "13:40 ~ 13:50";
+                ws.Range["A37"].Value = "13:50 ~ 14:00";
+                ws.Range["A38"].Value = "14:00 ~ 14:10";
+                ws.Range["A39"].Value = "14:10 ~ 14:20";
+                ws.Range["A40"].Value = "14:20 ~ 14:30";
+                ws.Range["A41"].Value = "14:30 ~ 14:40";
+                ws.Range["A42"].Value = "14:40 ~ 14:50";
+                ws.Range["A43"].Value = "14:50 ~ 15:00";
+                ws.Range["A44"].Value = "15:00 ~ 15:10";
+                ws.Range["A45"].Value = "15:10 ~ 15:20";
+                ws.Range["A46"].Value = "15:20 ~ 15:30";
+                ws.Range["A47"].Value = "15:30 ~ 15:40";
+                ws.Range["A48"].Value = "15:40 ~ 15:50";
+                ws.Range["A49"].Value = "15:50 ~ 16:00";
+                ws.Range["A50"].Value = "16:00 ~ 16:10";
+                ws.Range["A51"].Value = "16:10 ~ 16:20";
+                ws.Range["A52"].Value = "16:20 ~ 16:30";
+                ws.Range["A53"].Value = "16:30 ~ 16:40";
+                ws.Range["A54"].Value = "16:40 ~ 16:50";
+                ws.Range["A55"].Value = "16:50 ~ 17:00";
+                ws.Range["A56"].Value = "17:00 ~ 17:10";
+                ws.Range["A57"].Value = "17:10 ~ 17:20";
+                ws.Range["A58"].Value = "17:20 ~ 17:30";
+                ws.Range["A59"].Value = "17:30 ~ 17:40";
+                ws.Range["A60"].Value = "17:40 ~ 17:50";
+                ws.Range["A61"].Value = "17:50 ~ 18:00";
+                ws.Range["A62"].Value = "18:00 ~ 18:10";
+                ws.Range["A63"].Value = "18:10 ~ 18:20";
+                ws.Range["A64"].Value = "18:20 ~ 18:30";
+                ws.Range["A65"].Value = "18:30 ~ 18:40";
+                ws.Range["A66"].Value = "18:40 ~ 18:50";
+                ws.Range["A67"].Value = "18:50 ~ 19:00";
+                ws.Range["A68"].Value = "19:00 ~ 19:10";
+                ws.Range["A69"].Value = "19:10 ~ 19:20";
+                ws.Range["A70"].Value = "19:20 ~ 19:30";
+                ws.Range["A71"].Value = "19:30 ~ 19:40";
+                ws.Range["A72"].Value = "19:40 ~ 19:50";
+                ws.Range["A73"].Value = "19:50 ~ 20:00";
+                ws.Range["A74"].Value = "20:00 ~ 20:10";
+                ws.Range["A75"].Value = "20:10 ~ 20:20";
+                ws.Range["A76"].Value = "20:20 ~ 20:30";
+                ws.Range["A77"].Value = "20:30 ~ 20:40";
+                ws.Range["A78"].Value = "20:40 ~ 20:50";
+                ws.Range["A79"].Value = "20:50 ~ 21:00";
                 #endregion
-                ws.Range["A1:P43"].HorizontalAlignment = XlHAlign.xlHAlignCenter;
+                ws.Range["A1:P79"].HorizontalAlignment = XlHAlign.xlHAlignCenter;
 
                 wb.SaveAs(XlsxPath);
                 wb.Close();
