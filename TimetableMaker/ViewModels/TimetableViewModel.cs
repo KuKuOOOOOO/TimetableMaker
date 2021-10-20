@@ -17,6 +17,7 @@ namespace TimetableMaker.ViewModels
         private List<string> ClassList = new List<string>();
         private List<DateTime> StartTimeList = new List<DateTime>();
         private List<DateTime> EndTimeList = new List<DateTime>();
+        ShutdownProcess shutdownProcess = new ShutdownProcess(); // Everthing to end and shutdown excel process
         public TimetableViewModel() // Construct
         {
             Timetable = new TimetableModel();
@@ -370,12 +371,14 @@ namespace TimetableMaker.ViewModels
                             System.Windows.MessageBox.Show("讀取完成\n點擊預覽課表可確認相關課程", "Information", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
                             wb.Close();
                             app.Quit();
+                            shutdownProcess.ExcelProcess();
                         }
                         catch (Exception ex)
                         {
                             System.Windows.MessageBox.Show("請確認讀取的檔案是否正確無誤(***課表.xlsx)\n" + ex.ToString(), "Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
                             wb.Close();
                             app.Quit();
+                            shutdownProcess.ExcelProcess();
                             isBusy = false;
                             return;
                         }
@@ -567,8 +570,7 @@ namespace TimetableMaker.ViewModels
                         wb.SaveAs(path);
                         wb.Close();
                         app.Quit();
-                        //System.IO.FileInfo fi = new System.IO.FileInfo(@"TimeTable.xlsx");
-                        //fi.Delete();
+                        shutdownProcess.ExcelProcess();
                         System.Windows.MessageBox.Show("課表已輸出至" + path, "TimetableMaker", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Asterisk);
                         TeacherName = "";
                         ClassList.Clear();
@@ -584,6 +586,7 @@ namespace TimetableMaker.ViewModels
                     {
                         wb.Close();
                         app.Quit();
+                        shutdownProcess.ExcelProcess();
                         if (File.Exists(XlsxPath))
                             File.Delete(XlsxPath);
                         System.Windows.MessageBox.Show(IOex.ToString(), "Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
@@ -592,6 +595,7 @@ namespace TimetableMaker.ViewModels
                     {
                         wb.Close();
                         app.Quit();
+                        shutdownProcess.ExcelProcess();
                         if (File.Exists(XlsxPath))
                             File.Delete(XlsxPath);
                         System.Windows.MessageBox.Show(ex.ToString(), "Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
@@ -749,6 +753,7 @@ namespace TimetableMaker.ViewModels
                 wb.SaveAs(XlsxPath);
                 wb.Close();
                 app.Quit();
+                shutdownProcess.ExcelProcess();
                 File.SetAttributes(XlsxPath, File.GetAttributes(XlsxPath) | FileAttributes.Hidden);
             }
             catch (IOException IOex)
@@ -757,6 +762,7 @@ namespace TimetableMaker.ViewModels
                 app.Quit();
                 if (File.Exists(XlsxPath))
                     File.Delete(XlsxPath);
+                shutdownProcess.ExcelProcess();
                 System.Windows.MessageBox.Show(IOex.ToString(), "Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
             }
             catch (Exception ex)
@@ -765,6 +771,7 @@ namespace TimetableMaker.ViewModels
                 app.Quit();
                 if (File.Exists(XlsxPath))
                     File.Delete(XlsxPath);
+                shutdownProcess.ExcelProcess();
                 System.Windows.MessageBox.Show(ex.ToString(), "Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
             }
             return XlsxPath;

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,6 +24,9 @@ namespace TimetableMaker
         public MainWindow()
         {
             InitializeComponent();
+            // Open and check excel process is shutdown
+            ShutdownProcess shutdownProcess = new ShutdownProcess();
+            shutdownProcess.ExcelProcess();
         }
     }
 }
